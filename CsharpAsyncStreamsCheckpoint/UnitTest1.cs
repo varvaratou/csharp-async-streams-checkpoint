@@ -14,7 +14,7 @@ namespace CsharpAsyncStreamsCheckpoint
         public async Task Test1()
         {
             string result = "";
-            foreach (var student in await GetStudentsAsync())
+            await foreach (var student in GetStudentsAsync())
             {
                 result = result + ($"{student.FirstName} {student.LastName} - ");
             }
@@ -22,15 +22,19 @@ namespace CsharpAsyncStreamsCheckpoint
             Assert.AreEqual("John Doe - Jane Doe - John Smith - ", result);
         }
 
-        static async Task<IEnumerable<Student>> GetStudentsAsync()
+        static async IAsyncEnumerable<Student> GetStudentsAsync()
         {
-            await Task.Delay(2000);
-            return new List<Student>()
+            var studentList = new List<Student>()
             {
                 new Student() {FirstName = "John", LastName = "Doe", Email = "john.doe@gmail.com", Grade = 'A'},
                 new Student() {FirstName = "Jane", LastName = "Doe", Email="jane.doe@galvanize.com", Grade = 'B'},
                 new Student() {FirstName = "John", LastName = "Smith", Email = "john.smith@galvanize.com", Grade = 'C'}
             };
+            foreach(var student in studentList)
+            {
+                await Task.Delay(300);
+                yield return student;
+            } 
         }
     }
 
